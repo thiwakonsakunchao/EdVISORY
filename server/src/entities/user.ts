@@ -1,13 +1,19 @@
-import { Entity, ObjectIdColumn, Column, ObjectId, PrimaryGeneratedColumn } from "typeorm";
+import { Entity, ObjectIdColumn, Column } from "typeorm";
+import { ObjectId } from "mongodb"; // ใช้ ObjectId จาก mongodb
 
 @Entity()
 export class User {
   @ObjectIdColumn()
-  id!: ObjectId;
+  _id?: ObjectId;
 
   @Column()
-  name!: string;
+  username: string;
 
   @Column()
-  email!: string;
+  password: string;
+
+  constructor(username: string, password: string) {
+    this.username = username;
+    this.password = password;
+  }
 }
