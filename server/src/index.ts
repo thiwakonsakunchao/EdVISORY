@@ -3,11 +3,10 @@ import session from "express-session";
 import "dotenv/config";
 import MongoStore from "connect-mongo";
 import { AppDataSource } from "./config/configDB";
-import userRoute from "./routes/authRoutes";
+import userRoute from "../src/routes/authRoutes";
 
 const app = express();
 const port = process.env.PORT || 3000;
-const key_secret:string = process.env.MY_SECRET!;
 
 app.use(express.json());
 
@@ -15,7 +14,7 @@ app.use(express.json());
 // ตั้งค่า session
 app.use(
   session({
-    secret: key_secret,
+    secret: "your-secret-key",
     resave: false,
     saveUninitialized: false,
     store: MongoStore.create({ mongoUrl: process.env.MONGO_URL }),
@@ -42,6 +41,7 @@ AppDataSource.initialize()
 declare module 'express-session' {
   interface SessionData  {
      token: string;
+     userId: string | null;
    }
  }
 

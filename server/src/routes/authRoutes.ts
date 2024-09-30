@@ -1,5 +1,5 @@
 import { Router, Request, Response } from "express";
-import { register, login, logout, status, test } from "../controllers/authController"; 
+import { register, login, logout, status } from "../controllers/authController"; 
 import { authenticate } from "../middleware/authMiddleware"; // นำเข้า middleware authenticate
 
 const router = Router();
@@ -25,10 +25,6 @@ router.post("/logout", authenticate, (req: Request, res: Response) => {
 });
 
 
-// เส้นทางสำหรับออกจากระบบ
-router.get("/test", authenticate, (req: Request, res: Response) => {
-  test(req, res);
-});
 
 
 export default router;
