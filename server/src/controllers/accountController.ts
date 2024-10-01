@@ -46,3 +46,35 @@ export const deleteAccount = async (req: Request, res: Response): Promise<void> 
     res.status(500).json({ message: "Error deleting account", error });
   }
 };
+
+
+export const getAllAccount = async (req: Request, res: Response): Promise<void> => {
+  const { page = 1, limit = 10 } = req.query;
+
+  if (!req.session.userId) {
+    res.status(401).json({ message: "User not authenticated" });
+    return;
+  }
+
+  try {
+    const filters: any = { userId: req.session.userId };
+
+    const numberLimit = parseInt(limit as string) || 10; 
+    const numberPage = parseInt(page as string) || 1; 
+    const skip = (numberPage - 1) * numberLimit; 
+
+    const accounts = await AppDataSource.getMongoRepository(Account).find({
+      where: filters,
+      skip: skip,
+      take: numberLimit
+    });
+  
+    res.status(200).json({
+      accounts,
+
+    });
+  } catch (error) {
+    console.error('Error fetching transactions:', error);
+    res.status(500).json({ message: "Error fetching transactions", error });
+  }
+};

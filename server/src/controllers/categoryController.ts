@@ -17,9 +17,9 @@ export const addCategory = async (req: Request, res: Response): Promise<void> =>
       }
 
     try {
-        const categorty = new Category(category_name);
-        await AppDataSource.getRepository(Category).save(categorty);
-        res.status(201).json({ message: "Category created successfully", categorty });
+        const category = new Category(req.session.userId,category_name);
+        await AppDataSource.getRepository(Category).save(category);
+        res.status(201).json({ message: "Category created successfully", category });
       } catch (error) {
         res.status(500).json({ message: "Error creating account", error });
       }
@@ -43,5 +43,36 @@ export const deleteCategory = async (req: Request, res: Response): Promise<void>
       res.status(201).json({ message: "Delete Successful" });
     } catch (error) {
       res.status(500).json({ message: "Error deleting account", error });
+    }
+  };
+
+  export const getAllCategory = async (req: Request, res: Response): Promise<void> => {
+    const { page = 1, limit = 10 } = req.query;
+  
+    if (!req.session.userId) {
+      res.status(401).json({ message: "User not authenticated" });
+      return;
+    }
+  
+    try {
+      const filters: any = { userId: req.session.userId };
+  
+      const numberLimit = parseInt(limit as string) || 10; 
+      const numberPage = parseInt(page as string) || 1; 
+      const skip = (numberPage - 1) * numberLimit; 
+  
+      const categorys = await AppDataSource.getMongoRepository(Category).find({
+        where: filters,
+        skip: skip,
+        take: numberLimit
+      });
+    
+      res.status(200).json({
+        categorys,
+  
+      });
+    } catch (error) {
+      console.error('Error fetching transactions:', error);
+      res.status(500).json({ message: "Error fetching transactions", error });
     }
   };

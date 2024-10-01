@@ -7,10 +7,14 @@ export class Category {
   _id?: ObjectId;
 
   @Column()
+  userId: string; 
+
+  @Column()
   category_name: string;
 
 
-  constructor(category_name: string) {
+  constructor(userId: string, category_name: string) {
+    this.userId = userId;
     this.category_name = category_name;
   }
 }
