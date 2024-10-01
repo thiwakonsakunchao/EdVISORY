@@ -4,6 +4,7 @@ import { Transaction } from "../entities/transaction";
 import { ObjectId } from "mongodb";
 
 
+
 export const addTransaction = async (req: Request, res: Response): Promise<void> => {
   const { accountId, categoryId, amount, slipUrl, description } = req.body;
 
@@ -64,3 +65,54 @@ export const deleteTransaction = async (req: Request, res: Response): Promise<vo
       res.status(500).json({ message: "Error deleting transaction", error });
     }
   };
+
+
+
+  export const getAllTransactions = async (req: Request, res: Response): Promise<void> => {
+    const { month, year, categoryId, accountId } = req.query;
+  
+    if (!req.session.userId) {
+      res.status(401).json({ message: "User not authenticated" });
+      return;
+    }
+  
+    try {
+      const filters: any = { userId: req.session.userId };
+  
+      if (month || year) {
+        const startDate = new Date();
+        const endDate = new Date();
+  
+        if (year) {
+          startDate.setFullYear(parseInt(year as string), month ? parseInt(month as string) - 1 : 0, 1);
+          endDate.setFullYear(parseInt(year as string), month ? parseInt(month as string) : 12, 0);
+        } else if (month) {
+          startDate.setMonth(parseInt(month as string) - 1, 1);
+          endDate.setMonth(parseInt(month as string), 0);
+        }
+  
+        filters.transaction_date = {
+          $gte: startDate,
+          $lte: endDate
+        };
+      }
+  
+      if (categoryId) {
+        filters.categoryId = categoryId;
+      }
+
+      if (accountId) {
+        filters.accountId = accountId;
+      }
+
+      const transactions = await AppDataSource.getMongoRepository(Transaction).find({
+        where: filters
+      });
+  
+      res.status(200).json(transactions);
+    } catch (error) {
+      console.error('Error fetching transactions:', error);
+      res.status(500).json({ message: "Error fetching transactions", error });
+    }
+  };
+  
