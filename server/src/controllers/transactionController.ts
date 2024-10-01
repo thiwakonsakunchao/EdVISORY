@@ -32,8 +32,15 @@ export const addTransaction = async (req: Request, res: Response): Promise<void>
     return;
   }
 
-  if (!accountId || !categoryId || !amount) {
+  if (!accountId || !categoryId || amount === undefined || amount === null) {
     res.status(400).json({ message: "All fields are required" });
+    return;
+  }
+
+  // ตรวจสอบว่า amount เป็นตัวเลขหรือไม่
+  const numericAmount = Number(amount);
+  if (isNaN(numericAmount)) {
+    res.status(400).json({ message: "Amount must be a number" });
     return;
   }
 
@@ -61,7 +68,7 @@ export const addTransaction = async (req: Request, res: Response): Promise<void>
       req.session.userId,
       accountId,
       categoryId,
-      amount,
+      numericAmount, 
       transaction_date, 
       [],
       cleanText
@@ -88,7 +95,9 @@ export const deleteTransaction = async (req: Request, res: Response): Promise<vo
         _id: new ObjectId(id),
         userId: req.session.userId,
       });
-  
+
+      res.status(201).json({ message: "Delete Successful" });
+
       if (result.affected === 0) {
         res.status(404).json({ message: "Transaction not found" });
       } else {

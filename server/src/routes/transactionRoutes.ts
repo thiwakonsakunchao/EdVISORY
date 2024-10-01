@@ -7,7 +7,7 @@ const router = Router();
 
 router.post("/add", authenticate, uploadSingle, addTransaction);
 
-router.delete("/:id", authenticate, deleteTransaction);
+router.delete("/delete/:id", authenticate, deleteTransaction);
 
 router.get("/", authenticate, getAllTransactions);
 
