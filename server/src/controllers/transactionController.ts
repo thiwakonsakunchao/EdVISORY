@@ -2,11 +2,11 @@ import { Request, Response } from "express";
 import { AppDataSource } from "../config/configDB"; 
 import { Transaction } from "../entities/transaction";
 import { ObjectId } from "mongodb";
-
+import bucket from "../config/configFirebase";
 
 
 export const addTransaction = async (req: Request, res: Response): Promise<void> => {
-  const { accountId, categoryId, amount, slipUrl, description } = req.body;
+  const { accountId, categoryId, amount, description } = req.body;
 
   if (!req.session.userId) {
     res.status(401).json({ message: "User not authenticated" });
@@ -22,13 +22,31 @@ export const addTransaction = async (req: Request, res: Response): Promise<void>
     const transaction_date = new Date(); 
     transaction_date.setHours(transaction_date.getHours() + 7);
 
+    let slipUrl = "";
+    if (req.file) {
+
+      const fileName = `transactions/${req.file.originalname}`;
+
+ 
+      const file = bucket.file(fileName);
+      await file.save(req.file.buffer, {
+        metadata: {
+          contentType: req.file.mimetype,
+        },
+      });
+
+      await file.makePublic();
+
+      slipUrl = `https://storage.googleapis.com/${bucket.name}/${fileName}`;
+    }
+
     const transaction = new Transaction(
       req.session.userId,
       accountId,
       categoryId,
       amount,
       transaction_date, 
-      slipUrl || "",
+      [],
       description || ""
     );
 
@@ -38,8 +56,6 @@ export const addTransaction = async (req: Request, res: Response): Promise<void>
     res.status(500).json({ message: "Error creating transaction", error });
   }
 };
-
-
 
 
 export const deleteTransaction = async (req: Request, res: Response): Promise<void> => {
@@ -108,7 +124,7 @@ export const deleteTransaction = async (req: Request, res: Response): Promise<vo
       const transactions = await AppDataSource.getMongoRepository(Transaction).find({
         where: filters
       });
-  
+      
       res.status(200).json(transactions);
     } catch (error) {
       console.error('Error fetching transactions:', error);
@@ -116,3 +132,107 @@ export const deleteTransaction = async (req: Request, res: Response): Promise<vo
     }
   };
   
+
+  export const addSlipToTransaction = async (req: Request, res: Response): Promise<void> => {
+    const { id } = req.params;
+
+    if (!req.session.userId) {
+        res.status(401).json({ message: "User not authenticated" });
+        return;
+    }
+
+    if (!req.file) {
+        res.status(400).json({ message: "Slip image is required" });
+        return;
+    }
+
+    try {
+        const fileName = `transactions/${req.file.originalname}`;
+        const file = bucket.file(fileName);
+
+        await file.save(req.file.buffer, {
+            metadata: {
+                contentType: req.file.mimetype,
+            },
+        });
+
+        await file.makePublic();
+
+        const slipUrl = `https://storage.googleapis.com/${bucket.name}/${fileName}`;
+
+        const transaction = await AppDataSource.getRepository(Transaction).findOne({
+            where: {
+                _id: new ObjectId(id)
+            }
+        });
+
+        if (!transaction) {
+            res.status(404).json({ message: "Transaction not found" });
+            return;
+        }
+
+        if (!transaction.slipUrl) {
+            transaction.slipUrl = []; 
+        }
+
+        if (!Array.isArray(transaction.slipUrl)) {
+            transaction.slipUrl = []; 
+}
+
+        transaction.slipUrl.push(slipUrl);
+
+        await AppDataSource.getRepository(Transaction).save(transaction);
+
+        res.status(200).json({ message: "Slip image added successfully", transaction });
+        
+    } catch (error) {
+        console.error('Error in addSlipToTransaction:', error);
+        res.status(500).json({ message: "Error updating transaction", error: error }); 
+    }
+};
+
+export const removeSlipFromTransaction = async (req: Request, res: Response): Promise<void> => {
+  
+  const { id } = req.params; 
+  const { slipUrl } = req.body; 
+
+  if (!req.session.userId) {
+      res.status(401).json({ message: "User not authenticated" });
+      return;
+  }
+
+  try {
+      const transaction = await AppDataSource.getRepository(Transaction).findOne({
+          where: {
+              _id: new ObjectId(id)
+          }
+      });
+      if (!transaction) {
+          res.status(404).json({ message: "Transaction not found" });
+          return;
+      }
+
+      if (!transaction.slipUrl || !Array.isArray(transaction.slipUrl)) {
+          res.status(400).json({ message: "No slip URLs found in transaction" });
+          return;
+      }
+
+      if (!transaction.slipUrl.includes(slipUrl)) {
+          res.status(400).json({ message: "Slip URL not found in transaction" });
+          return;
+      }
+
+      transaction.slipUrl = transaction.slipUrl.filter(url => url !== slipUrl);
+
+      const filePath = slipUrl.split('/').pop(); // ดึงชื่อไฟล์จาก URL
+      
+      await bucket.file(`transactions/${filePath}`).delete();
+
+      await AppDataSource.getRepository(Transaction).save(transaction);
+
+      res.status(200).json({ message: "Slip removed successfully", slipUrl: transaction.slipUrl });
+  } catch (error) {
+      console.error("Error removing slip from transaction:", error);
+      res.status(500).json({ message: "Error removing slip from transaction", error });
+  }
+};

@@ -21,13 +21,13 @@ export class Transaction {
   @Column()
   transaction_date: Date;
 
-  @Column()
-  slipUrl: string; 
+  @Column("simple-array")
+  slipUrl: string[]; 
 
   @Column()
   description: string;
 
-  constructor(userId: string, accountId: string, categoryId: string, amount: number, transaction_date: Date, slipUrl: string, description: string) {
+  constructor(userId: string, accountId: string, categoryId: string, amount: number, transaction_date: Date, slipUrl: string[], description: string) {
     this.userId = userId;
     this.accountId = accountId;
     this.categoryId = categoryId;
