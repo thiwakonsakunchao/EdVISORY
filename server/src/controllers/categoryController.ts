@@ -16,6 +16,12 @@ export const addCategory = async (req: Request, res: Response): Promise<void> =>
         return;
       }
 
+      const existingCategoryName = await AppDataSource.getRepository(Category).findOneBy({ category_name });
+      if (existingCategoryName) {
+        res.status(400).json({ message: "Category Name already exists" });
+        return 
+      }
+
     try {
         const category = new Category(req.session.userId,category_name);
         await AppDataSource.getRepository(Category).save(category);

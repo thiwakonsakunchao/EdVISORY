@@ -12,8 +12,14 @@ export const addAccount = async (req: Request, res: Response): Promise<void> => 
     }
   
     if (!account_name || typeof account_name !== 'string' || account_name.trim() === "") {
-      res.status(400).json({ message: "Account account_name is required." });
+      res.status(400).json({ message: "account_name is required." });
       return;
+    }
+
+    const existingAccountName = await AppDataSource.getRepository(Account).findOneBy({ account_name });
+    if (existingAccountName) {
+      res.status(400).json({ message: "Account Name already exists" });
+      return 
     }
   
     try {

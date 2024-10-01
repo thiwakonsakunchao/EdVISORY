@@ -37,12 +37,12 @@ export const addTransaction = async (req: Request, res: Response): Promise<void>
     return;
   }
 
-  // ตรวจสอบว่า amount เป็นตัวเลขหรือไม่
   const numericAmount = Number(amount);
   if (isNaN(numericAmount)) {
     res.status(400).json({ message: "Amount must be a number" });
     return;
   }
+  
 
   try {
     const transaction_date = new Date(); 
