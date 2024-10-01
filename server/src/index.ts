@@ -4,17 +4,20 @@ import "dotenv/config";
 import MongoStore from "connect-mongo";
 import { AppDataSource } from "./config/configDB";
 import userRoute from "../src/routes/authRoutes";
+import categoryRoute from "./routes/categoryRoutes";
+import accountRoutes from "./routes/accountRoutes";
+import transactionRoutes from "./routes/transactionRoutes";
 
 const app = express();
 const port = process.env.PORT || 3000;
-
+const key_secret:string = process.env.MY_SECRET!;
 app.use(express.json());
 
  
 // ตั้งค่า session
 app.use(
   session({
-    secret: "your-secret-key",
+    secret: key_secret,
     resave: false,
     saveUninitialized: false,
     store: MongoStore.create({ mongoUrl: process.env.MONGO_URL }),
@@ -24,6 +27,9 @@ app.use(
 
 // ใช้เส้นทาง userRoute
 app.use("/api/user", userRoute);
+app.use("/api/accounts", accountRoutes);
+app.use("/api/category", categoryRoute);
+app.use("/api/transaction", transactionRoutes);
 
 
 AppDataSource.initialize()

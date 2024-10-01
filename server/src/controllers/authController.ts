@@ -1,7 +1,6 @@
 import { Request, Response } from "express";
 import { AppDataSource } from "../config/configDB"; // นำเข้า DataSource จาก TypeORM
 import bcrypt from "bcryptjs";
-import crypto from "crypto";
 import { User } from "../entities/user";
 import { ObjectId } from "mongodb";
 
