@@ -4,6 +4,24 @@ import { Transaction } from "../entities/transaction";
 import { ObjectId } from "mongodb";
 import bucket from "../config/configFirebase";
 
+const badWords = [
+  "สัส",
+  "ห่า",
+  "เหี้ย",
+  "กู",
+  "โง่",
+  "ไอ่",
+  "แม่ง",
+  "อีนี่",
+  "มึง",
+];
+
+
+function replaceBadWords(text: string, badWords: string[], replacement: string = "***"): string {
+  const badWordsPattern = new RegExp(badWords.join("|"), "gi");
+  return text.replace(badWordsPattern, replacement);
+}
+
 
 export const addTransaction = async (req: Request, res: Response): Promise<void> => {
   const { accountId, categoryId, amount, description } = req.body;
@@ -24,21 +42,19 @@ export const addTransaction = async (req: Request, res: Response): Promise<void>
 
     let slipUrl = "";
     if (req.file) {
-
       const fileName = `transactions/${req.file.originalname}`;
-
- 
       const file = bucket.file(fileName);
       await file.save(req.file.buffer, {
         metadata: {
           contentType: req.file.mimetype,
         },
       });
-
       await file.makePublic();
-
       slipUrl = `https://storage.googleapis.com/${bucket.name}/${fileName}`;
     }
+
+    const text = description;
+    const cleanText = replaceBadWords(text, badWords);
 
     const transaction = new Transaction(
       req.session.userId,
@@ -47,7 +63,7 @@ export const addTransaction = async (req: Request, res: Response): Promise<void>
       amount,
       transaction_date, 
       [],
-      description || ""
+      cleanText
     );
 
     await AppDataSource.getRepository(Transaction).save(transaction);
@@ -224,8 +240,8 @@ export const removeSlipFromTransaction = async (req: Request, res: Response): Pr
 
       transaction.slipUrl = transaction.slipUrl.filter(url => url !== slipUrl);
 
-      const filePath = slipUrl.split('/').pop(); // ดึงชื่อไฟล์จาก URL
-      
+      const filePath = slipUrl.split('/').pop(); 
+
       await bucket.file(`transactions/${filePath}`).delete();
 
       await AppDataSource.getRepository(Transaction).save(transaction);
@@ -236,3 +252,36 @@ export const removeSlipFromTransaction = async (req: Request, res: Response): Pr
       res.status(500).json({ message: "Error removing slip from transaction", error });
   }
 };
+
+export const updateDescription = async (req: Request, res: Response): Promise<void> => {
+  const { id } = req.params;
+  const { description } = req.body;
+
+  const text = description;
+  const cleanText = replaceBadWords(text, badWords);
+
+  if (!req.session.userId) {
+    res.status(401).json({ message: "User not authenticated" });
+    return;
+  }
+
+  try {
+    const transaction = await AppDataSource.getRepository(Transaction).findOne({
+      where: { _id: new ObjectId(id) }
+    });
+
+    if (!transaction) {
+      res.status(404).json({ message: "Transaction not found" });
+      return;
+    }
+
+    transaction.description = cleanText;
+
+    await AppDataSource.getRepository(Transaction).save(transaction);
+
+    res.status(200).json({ message: "Description updated successfully", transaction });
+  } catch (error) {
+    res.status(500).json({ message: "Error updating description", error });
+  }
+};
+

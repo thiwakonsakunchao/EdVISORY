@@ -1,7 +1,6 @@
 {
   "dependencies": {
-    "@types/express": "^5.0.0",
-    "@types/mongodb": "^4.0.7",
+    "bad-words": "^4.0.0",
     "bcryptjs": "^2.4.3",
     "connect-mongo": "^5.1.0",
     "cookie-parser": "^1.4.6",
@@ -34,8 +33,11 @@
   "license": "ISC",
   "description": "",
   "devDependencies": {
+    "@types/bad-words": "^3.0.3",
     "@types/bcryptjs": "^2.4.6",
+    "@types/express": "^5.0.0",
     "@types/express-session": "^1.18.0",
+    "@types/mongodb": "^4.0.7",
     "@types/multer": "^1.4.12",
     "@types/node": "^22.7.4"
   }
