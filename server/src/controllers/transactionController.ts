@@ -19,6 +19,7 @@ export const addTransaction = async (req: Request, res: Response): Promise<void>
 
   try {
     const transaction_date = new Date(); 
+    transaction_date.setHours(transaction_date.getHours() + 7);
 
     const transaction = new Transaction(
       req.session.userId,

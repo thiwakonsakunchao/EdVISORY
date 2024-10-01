@@ -7,14 +7,16 @@ import userRoute from "../src/routes/authRoutes";
 import categoryRoute from "./routes/categoryRoutes";
 import accountRoutes from "./routes/accountRoutes";
 import transactionRoutes from "./routes/transactionRoutes";
+import expenseRoutes from "./routes/expenseRoutes";
 
 const app = express();
 const port = process.env.PORT || 3000;
 const key_secret:string = process.env.MY_SECRET!;
+
 app.use(express.json());
 
  
-// ตั้งค่า session
+
 app.use(
   session({
     secret: key_secret,
@@ -25,11 +27,11 @@ app.use(
   })
 );
 
-// ใช้เส้นทาง userRoute
 app.use("/api/user", userRoute);
 app.use("/api/accounts", accountRoutes);
 app.use("/api/category", categoryRoute);
 app.use("/api/transaction", transactionRoutes);
+app.use("/api/expense", expenseRoutes);
 
 
 AppDataSource.initialize()
@@ -43,7 +45,7 @@ AppDataSource.initialize()
 
 
 
-  //กำหนก token เป็น string ใน express-session
+
 declare module 'express-session' {
   interface SessionData  {
      token: string;
@@ -51,11 +53,11 @@ declare module 'express-session' {
    }
  }
 
- // สร้าง interface ใหม่ที่เพิ่ม user เข้าไปใน Request
+
 declare global {
   namespace Express {
     interface Request {
-      user?: string; // หรือ type ที่เหมาะสม เช่น ObjectId หรือ type อื่นๆ
+      user?: string; 
     }
   }
 }

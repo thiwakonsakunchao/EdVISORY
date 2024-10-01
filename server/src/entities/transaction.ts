@@ -1,4 +1,3 @@
-// entities/Expense.ts
 import { Entity, ObjectIdColumn, Column } from "typeorm";
 import { ObjectId } from "mongodb";
 
