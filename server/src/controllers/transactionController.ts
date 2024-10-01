@@ -3,6 +3,7 @@ import { AppDataSource } from "../config/configDB";
 import { Transaction } from "../entities/transaction";
 import { ObjectId } from "mongodb";
 import bucket from "../config/configFirebase";
+import { Any } from "typeorm";
 
 const badWords = [
   "สัส",
@@ -101,7 +102,7 @@ export const deleteTransaction = async (req: Request, res: Response): Promise<vo
 
 
   export const getAllTransactions = async (req: Request, res: Response): Promise<void> => {
-    const { month, year, categoryId, accountId } = req.query;
+    const { month, year, categoryId, accountId, page = 1, limit = 10 } = req.query;
   
     if (!req.session.userId) {
       res.status(401).json({ message: "User not authenticated" });
@@ -137,11 +138,20 @@ export const deleteTransaction = async (req: Request, res: Response): Promise<vo
         filters.accountId = accountId;
       }
 
+      const numberLimit = parseInt(limit as string) || 10; 
+      const numberPage = parseInt(page as string) || 1; 
+      const skip = (numberPage - 1) * numberLimit; 
+
       const transactions = await AppDataSource.getMongoRepository(Transaction).find({
-        where: filters
+        where: filters,
+        skip: skip,
+        take: numberLimit
       });
       
-      res.status(200).json(transactions);
+      res.status(200).json({
+        transactions,
+
+      });
     } catch (error) {
       console.error('Error fetching transactions:', error);
       res.status(500).json({ message: "Error fetching transactions", error });
