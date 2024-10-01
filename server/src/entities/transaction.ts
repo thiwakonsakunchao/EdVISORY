@@ -9,11 +9,11 @@ export class Transaction {
   @Column()
   userId: string; 
 
-  @Column()
-  accountId: string; 
+  @Column({ nullable: true })
+  accountId: string | null; 
 
-  @Column()
-  categoryId: string;
+  @Column({ nullable: true })
+  categoryId: string | null;
 
   @Column()
   amount: number;
@@ -27,7 +27,7 @@ export class Transaction {
   @Column()
   description: string;
 
-  constructor(userId: string, accountId: string, categoryId: string, amount: number, transaction_date: Date, slipUrl: string[], description: string) {
+  constructor(userId: string, accountId: string | null, categoryId: string | null, amount: number, transaction_date: Date, slipUrl: string[], description: string) {
     this.userId = userId;
     this.accountId = accountId;
     this.categoryId = categoryId;

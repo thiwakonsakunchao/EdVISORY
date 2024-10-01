@@ -5,40 +5,27 @@
     "categoryId": "66fab0cbcdc59c9c87cb9b56",
     "amount": 1200,
     "transaction_date": "2024-10-01T04:40:01.156Z",
-    "slipUrl": [],
-    "description": "55555",
-    "_id": "66fc6c3101190d5f7b915efb"
-  },
-  {
-    "userId": "66fc69c8142f06590a74aac3",
-    "accountId": "66fab0c5cdc59c9c87cb9b55",
-    "categoryId": "66fab0cbcdc59c9c87cb9b56",
-    "amount": 1200,
-    "transaction_date": "2024-09-02T04:40:22.601Z",
-    "slipUrl": [],
-    "description": "",
-    "_id": "66fc6c4601190d5f7b915efc"
-  },
-  {
-    "userId": "66fc69c8142f06590a74aac3",
-    "accountId": "66fab0c5cdc59c9c87cb9b55",
-    "categoryId": "66fab0cbcdc59c9c87cb9b56",
-    "amount": 1200,
-    "transaction_date": "2024-10-02T04:43:04.853Z",
-    "slipUrl": [],
-    "description": "",
-    "_id": "66fc6ce801190d5f7b915efd"
-  },
-  {
-    "userId": "66fc69c8142f06590a74aac3",
-    "accountId": "66fab0c5cdc59c9c87cb9b55",
-    "categoryId": "66fab0cbcdc59c9c87cb9b56",
-    "amount": 1200,
-    "transaction_date": "2024-10-02T04:43:50.843Z",
     "slipUrl": [
       "https://storage.googleapis.com/edvisory-test-image.appspot.com/transactions/409789090_1112130676333384_1872163148223451334_n.jpg"
     ],
-    "description": "",
-    "_id": "66fc6d1601190d5f7b915efe"
+    "description": "Test transaction 1"
+  },
+  {
+    "userId": "66fc69c8142f06590a74aac3",
+    "accountId": "66fab0c5cdc59c9c87cb9b55",
+    "categoryId": "66fab0cbcdc59c9c87cb9b56",
+    "amount": 1500,
+    "transaction_date": "2024-10-02T04:43:04.853Z",
+    "slipUrl": [],
+    "description": "Test transaction 2"
+  },
+  {
+    "userId": "66fc69c8142f06590a74aac3",
+    "accountId": "66fab0c5cdc59c9c87cb9b55",
+    "categoryId": "66fab0cbcdc59c9c87cb9b56",
+    "amount": 800,
+    "transaction_date": "2024-10-02T04:43:50.843Z",
+    "slipUrl": [],
+    "description": "Test transaction 3"
   }
 ]

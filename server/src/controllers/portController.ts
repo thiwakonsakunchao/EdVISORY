@@ -1,11 +1,13 @@
 import { Request, Response } from "express";
 import * as XLSX from "xlsx";
+import stream from "stream";
+import csv from "csv-parser";
 import { AppDataSource } from "../config/configDB";
 import { Transaction } from "../entities/transaction";
 import fs from "fs";
 import path from "path"; 
 
-export const exportData = async (req: Request, res: Response): Promise<void> => {
+export const exportTransactionData = async (req: Request, res: Response): Promise<void> => {
   if (!req.session.userId) {
     res.status(401).json({ message: "User not authenticated" });
     return;
@@ -85,5 +87,71 @@ export const exportData = async (req: Request, res: Response): Promise<void> => 
   } catch (error) {
     console.error("Error exporting data:", error);
     res.status(500).json({ message: "Error exporting data", error });
+  }
+};
+
+export const importTransactionData = async (req: Request, res: Response): Promise<void> => {
+  try {
+    if (!req.file) {
+      res.status(400).json({ message: "No file uploaded" });
+      return;
+    }
+
+    const fileBuffer = req.file.buffer;
+    const fileExt = req.file.originalname.split('.').pop()?.toLowerCase();
+    let data: Transaction[] = []; 
+  
+    const userId = req.session.userId; 
+
+  
+    if (!userId) {
+      res.status(401).json({ message: "User not authenticated" });
+      return;
+    }
+
+
+    if (fileExt === "csv") {
+      const readableStream = new stream.Readable();
+      readableStream.push(fileBuffer);
+      readableStream.push(null);
+
+      readableStream
+        .pipe(csv())
+        .on('data', (row: any) => {
+          const transaction = new Transaction(
+            userId, 
+            null,
+            null,
+            parseFloat(row.amount),
+            new Date(row.transaction_date),
+            [], 
+            row.description
+          );
+          data.push(transaction);
+        })
+        .on('end', async () => {
+          await AppDataSource.getRepository(Transaction).save(data);
+          res.status(200).json({ message: "Data imported successfully", data });
+        });
+    } else if (fileExt === "json") {
+      data = JSON.parse(fileBuffer.toString()).map((row: any) => new Transaction(
+        userId, 
+        null,
+        null,
+        row.amount,
+        new Date(row.transaction_date),
+        [], 
+        row.description
+      ));
+
+      await AppDataSource.getRepository(Transaction).save(data);
+      res.status(200).json({ message: "Data imported successfully", data });
+    } else {
+      res.status(400).json({ message: "Unsupported file type" });
+      return;
+    }
+  } catch (error) {
+    console.error("Error importing data:", error);
+    res.status(500).json({ message: "Error importing data", error });
   }
 };

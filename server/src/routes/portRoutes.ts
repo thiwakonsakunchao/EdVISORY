@@ -1,8 +1,12 @@
 import { Router } from "express";
-import { exportData } from "../controllers/portController"; 
+import { exportTransactionData, importTransactionData } from "../controllers/portController"; 
+import { authenticate } from "../middleware/authMiddleware"; 
+import { importFile } from "../middleware/ImportMiddleware";
 
 const router = Router();
 
-router.get("/export", exportData);
+router.get("/export", authenticate, exportTransactionData);
+router.post("/import", authenticate, importFile, importTransactionData);
+
 
 export default router;
