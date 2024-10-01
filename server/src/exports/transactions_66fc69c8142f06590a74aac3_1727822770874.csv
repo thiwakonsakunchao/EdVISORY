@@ -1,0 +1,5 @@
+﻿accountId,categoryId,amount,transaction_date,slipUrl,description
+66fab0c5cdc59c9c87cb9b55,66fab0cbcdc59c9c87cb9b56,1200,10/1/24,N/A,55555
+66fab0c5cdc59c9c87cb9b55,66fab0cbcdc59c9c87cb9b56,1200,9/2/24,N/A,
+66fab0c5cdc59c9c87cb9b55,66fab0cbcdc59c9c87cb9b56,1200,10/2/24,N/A,
+66fab0c5cdc59c9c87cb9b55,66fab0cbcdc59c9c87cb9b56,1200,10/2/24,https://storage.googleapis.com/edvisory-test-image.appspot.com/transactions/409789090_1112130676333384_1872163148223451334_n.jpg,

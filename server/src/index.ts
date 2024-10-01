@@ -8,6 +8,7 @@ import categoryRoute from "./routes/categoryRoutes";
 import accountRoutes from "./routes/accountRoutes";
 import transactionRoutes from "./routes/transactionRoutes";
 import expenseRoutes from "./routes/expenseRoutes";
+import portRoutes from "./routes/portRoutes";
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -32,6 +33,7 @@ app.use("/api/accounts", accountRoutes);
 app.use("/api/category", categoryRoute);
 app.use("/api/transaction", transactionRoutes);
 app.use("/api/expense", expenseRoutes);
+app.use("/api/port", portRoutes);
 
 
 AppDataSource.initialize()
