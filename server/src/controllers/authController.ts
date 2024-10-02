@@ -28,7 +28,6 @@ export const register = async (req: Request, res: Response) => {
 export const login = async (req: Request, res: Response) => {
   const { username, password } = req.body;
 
-
   const user = await AppDataSource.getRepository(User).findOneBy({ username });
   if (!user) {
     return res.status(400).json({ message: "Invalid username or password" });

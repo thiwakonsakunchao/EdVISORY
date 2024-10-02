@@ -3,6 +3,8 @@ import { AppDataSource } from "../config/configDB";
 import { Transaction } from "../entities/transaction";
 import { ObjectId } from "mongodb";
 import bucket from "../config/configFirebase";
+import { Account } from "../entities/account";
+import { Category } from "../entities/category";
 
 const badWords = [
   "สัส",
@@ -31,8 +33,8 @@ export const addTransaction = async (req: Request, res: Response): Promise<void>
     return;
   }
 
-  if (!accountId || !categoryId || amount === undefined || amount === null) {
-    res.status(400).json({ message: "All fields are required" });
+  if (amount === undefined || amount === null) {
+    res.status(400).json({ message: "Please enter amount" });
     return;
   }
 
@@ -303,3 +305,94 @@ export const updateDescription = async (req: Request, res: Response): Promise<vo
   }
 };
 
+export const changeAccount = async (req: Request, res: Response): Promise<void> => {
+  const { id } = req.params;
+  const { accountId } = req.body;
+
+  if (!req.session.userId) {
+    res.status(401).json({ message: "User not authenticated" });
+    return;
+  }
+
+  try {
+
+    const userId = req.session.userId; 
+    
+    const transaction = await AppDataSource.getRepository(Transaction).findOne({
+      where: { _id: new ObjectId(id) }
+    });
+
+    if (!transaction) {
+      res.status(404).json({ message: "Transaction not found" });
+      return;
+    }
+
+    if (!ObjectId.isValid(accountId)) {
+      res.status(400).json({ message: "Invalid account ID" });
+      return;
+    }
+
+    const account = await AppDataSource.getRepository(Account).findOneBy({ _id: new ObjectId(accountId), userId });
+
+    if (!account) {
+      res.status(404).json({ message: "Account not found or does not belong to the user" });
+      return;
+    }
+    
+    const accountIdString = account._id!.toString();
+
+    transaction.accountId = accountIdString;
+
+    await AppDataSource.getRepository(Transaction).save(transaction);
+
+    res.status(200).json({ message: "Description updated successfully", transaction });
+  } catch (error) {
+    res.status(500).json({ message: "Error updating description", error });
+  }
+};
+
+export const changeCategory = async (req: Request, res: Response): Promise<void> => {
+  const { id } = req.params;
+  const { categoryId } = req.body;
+
+  if (!req.session.userId) {
+    res.status(401).json({ message: "User not authenticated" });
+    return;
+  }
+
+  try {
+
+    const userId = req.session.userId; 
+    
+    const transaction = await AppDataSource.getRepository(Transaction).findOne({
+      where: { _id: new ObjectId(id) }
+    });
+
+    if (!transaction) {
+      res.status(404).json({ message: "Transaction not found" });
+      return;
+    }
+
+    if (!ObjectId.isValid(categoryId)) {
+      res.status(400).json({ message: "Invalid category ID" });
+      return;
+    }
+
+    const category = await AppDataSource.getRepository(Category).findOneBy({ _id: new ObjectId(categoryId), userId });
+
+    if (!category) {
+      res.status(404).json({ message: "Category not found or does not belong to the user" });
+      return;
+    }
+    
+    const categoryIdString = category._id!.toString();
+
+    transaction.categoryId = categoryIdString;
+
+    await AppDataSource.getRepository(Transaction).save(transaction);
+
+    res.status(200).json({ message: "Description updated successfully", transaction });
+  } catch (error) {
+    res.status(500).json({ message: "Error updating description", error });
+  }
+};
