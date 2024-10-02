@@ -26,7 +26,19 @@ export const exportTransactionData = async (req: Request, res: Response): Promis
 
     const outputDir = path.join(__dirname, "../exports");
 
-    const format = req.query.format as string || 'csv'; 
+    const format = req.query.format as string;
+    
+    if (!format || typeof format !== 'string' || format.trim() === "") {
+      res.status(400).json({ message: "format is required." });
+      return;
+    }
+
+    const validFormat = ['csv', 'excel', 'json'];
+
+      if (!validFormat.includes(format)) {
+        res.status(400).json({ message: "Invalid summaryType. Valid values are csv, excel, or json." });
+        return;
+      }
 
     if (format === 'csv') {
 
@@ -51,7 +63,7 @@ export const exportTransactionData = async (req: Request, res: Response): Promis
       fs.writeFileSync(csvFilePath, XLSX.write(workbook, { type: 'buffer', bookType: 'csv' }));
       res.status(200).json({ message: "CSV file exported successfully.", filePath: csvFilePath });
 
-    } else if (format === 'xlsx') {
+    } else if (format === 'excel') {
 
       const xlsxData = transactions.map(transaction => ({
         accountId: transaction.accountId,

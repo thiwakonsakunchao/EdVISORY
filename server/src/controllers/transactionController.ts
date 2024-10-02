@@ -38,6 +38,11 @@ export const addTransaction = async (req: Request, res: Response): Promise<void>
     return;
   }
 
+  if (description === undefined) {
+    res.status(400).json({ message: "description is required" });
+    return;
+  }
+
   const numericAmount = Number(amount);
   if (isNaN(numericAmount)) {
     res.status(400).json({ message: "Amount must be a number" });

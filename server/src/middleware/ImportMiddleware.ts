@@ -13,7 +13,7 @@ const upload = multer({
     if (extname && mimetype) {
       return cb(null, true);
     }
-    cb(new Error("Unsupported file type"));
+    cb(new Error("Error: File type not supported!"));
   },
 });
 

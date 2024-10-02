@@ -23,7 +23,19 @@ export const getExpenseSummary = async (req: Request, res: Response): Promise<vo
       const endDate = new Date(Math.max(...transactions.map(t => new Date(t.transaction_date).getTime())));
   
 
-      const summaryType = req.query.summaryType || 'daily'; 
+      const summaryType = req.query.summaryType;
+
+      if (!summaryType || typeof summaryType !== 'string' || summaryType.trim() === "") {
+        res.status(400).json({ message: "summaryType is required." });
+        return;
+      }
+
+      const validSummaryTypes = ['daily', 'monthly', 'yearly'];
+      if (!validSummaryTypes.includes(summaryType)) {
+        res.status(400).json({ message: "Invalid summaryType. Valid values are daily, monthly, or yearly." });
+        return;
+      }
+
       const summary: Record<string, number> = {};
   
       transactions.forEach(transaction => {

@@ -16,6 +16,11 @@ export const addAccount = async (req: Request, res: Response): Promise<void> => 
       return;
     }
 
+    if (initial_balance === undefined || initial_balance === null) {
+      res.status(400).json({ message: "Please enter initial balance" });
+      return;
+    }
+
     const existingAccountName = await AppDataSource.getRepository(Account).findOneBy({ account_name });
     if (existingAccountName) {
       res.status(400).json({ message: "Account Name already exists" });

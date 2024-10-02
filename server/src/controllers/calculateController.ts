@@ -50,7 +50,7 @@ export const calculateAvailableBudget = async (req: Request, res: Response): Pro
     const transactions = await AppDataSource.getMongoRepository(Transaction).find({
         where: filters
       });
-    
+
     const totalExpenses = transactions.reduce((total, transaction) => total + transaction.amount, 0);
     
     const remainingBalance = account.initial_balance - totalExpenses;
@@ -60,8 +60,11 @@ export const calculateAvailableBudget = async (req: Request, res: Response): Pro
     const dailyBudget = remainingDays > 0 ? remainingBalance / remainingDays : 0;
 
     const initialBalance = account.initial_balance;;
+
+    const transactionCount = transactions.length;
     
     res.status(200).json({
+      transactionCount,
       initialBalance,
       totalExpenses,
       remainingBalance,
