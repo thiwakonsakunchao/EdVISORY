@@ -3,7 +3,6 @@ import { AppDataSource } from "../config/configDB";
 import { Transaction } from "../entities/transaction";
 import { ObjectId } from "mongodb";
 import bucket from "../config/configFirebase";
-import { Any } from "typeorm";
 
 const badWords = [
   "สัส",

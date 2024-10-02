@@ -4,7 +4,7 @@ import { Account } from "../entities/account";
 import { ObjectId } from "mongodb";
 
 export const addAccount = async (req: Request, res: Response): Promise<void> => {
-    const { account_name, initail_balance } = req.body;
+    const { account_name, initial_balance } = req.body;
   
     if (!req.session.userId) {
       res.status(401).json({ message: "User not authenticated" });
@@ -23,7 +23,7 @@ export const addAccount = async (req: Request, res: Response): Promise<void> => 
     }
   
     try {
-      const account = new Account(req.session.userId, account_name, initail_balance);
+      const account = new Account(req.session.userId, account_name, initial_balance);
       await AppDataSource.getRepository(Account).save(account);
       res.status(201).json({ message: "Account created successfully", account });
     } catch (error) {

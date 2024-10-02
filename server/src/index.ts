@@ -9,6 +9,7 @@ import accountRoutes from "./routes/accountRoutes";
 import transactionRoutes from "./routes/transactionRoutes";
 import expenseRoutes from "./routes/expenseRoutes";
 import portRoutes from "./routes/portRoutes";
+import calculateRoutes from "./routes/calculateRoutes";
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -34,6 +35,7 @@ app.use("/api/category", categoryRoute);
 app.use("/api/transaction", transactionRoutes);
 app.use("/api/expense", expenseRoutes);
 app.use("/api/port", portRoutes);
+app.use("/api/calculate", calculateRoutes)
 
 
 AppDataSource.initialize()

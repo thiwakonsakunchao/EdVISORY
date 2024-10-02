@@ -13,11 +13,11 @@ export class Account {
   account_name: string;
 
   @Column()
-  initail_balance: number;
+  initial_balance: number;
 
-  constructor(userId: string, account_name: string, initail_balance: number) {
+  constructor(userId: string, account_name: string, initial_balance: number) {
     this.userId = userId;
     this.account_name = account_name;
-    this.initail_balance = initail_balance;
+    this.initial_balance = initial_balance;
   }
 }
