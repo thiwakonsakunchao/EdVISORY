@@ -56,6 +56,15 @@ npm start
 ### คำแนะนำเพิ่มเติม
 - **หมายเหตุ**: ต้องมีไฟล์.envด้วย ให้นำไฟล์.envไปไว้ในfolder server
 
+## วิธี Compose Docker (แบบlocalhost)
+
+1. ต้องเปิดโปรแกรม Docker Desktop ทิ้งไว้ขณะที่ compose
+2. รันคำสั่ง docker ps เพื่อตรวจสอบว่าไม่มี container ไหนรันอยู่ // ถ้ารันอยู่ ให้ รันคำสั่ง docker kill "containerที่เราไม่ใช้"
+3. จากนั้นให้รัน build + compose ตามนี้
+```bash
+docker compose up --build
+```
+
 # การทดสอบ API ด้วย Postman
 
 ## Login
