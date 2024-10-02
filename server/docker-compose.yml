@@ -1,16 +1,17 @@
-version: "3"
+version: '3.8'
 
 services:
-  mongodb:
-    image: mongo
-    container_name: mongodb_container
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USER}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASS}
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
-      - "${MONGO_PORT}"
+      - "${PORT}:${PORT}"
+    environment:
+      - .env
     volumes:
-      - ${MONGO_VOLUME}
+      - app_data:/usr/src/app
+
 
 volumes:
-  mongodb_data_container:
+  app_data:
