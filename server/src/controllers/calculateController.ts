@@ -25,7 +25,6 @@ export const calculateAvailableBudget = async (req: Request, res: Response): Pro
       res.status(404).json({ message: "Account not found or does not belong to the user" });
       return;
     }
-    console.log(account);
     
 
     const currentDate = new Date();
